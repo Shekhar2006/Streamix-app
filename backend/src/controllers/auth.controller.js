@@ -115,4 +115,56 @@ export const logout = async (req, res) => {
         console.log(error);
         res.status(500).json({ message: "Something went wrong" });
     }
-};  
+};
+
+export const onboard = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
+
+        if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
+            return res.status(400).json({
+                message: "All fields are required",
+                missingFields: [
+                    !fullName && "fullName",
+                    !bio && "bio",
+                    !nativeLanguage && "nativeLanguage",
+                    !learningLanguage && "learningLanguage",
+                    !location && "location"
+                ].filter(Boolean),
+            });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userId, {
+            fullName,
+            bio,
+            nativeLanguage,
+            learningLanguage,
+            location,
+            isOnboarded: true
+        },
+            { new: true }).select("-password");
+
+        if (!updatedUser) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        try {
+            await upsertStreamUser({
+                id: updatedUser._id.toString(),
+                name: updatedUser.fullName,
+                image: updatedUser.profilePic || ""
+            });
+            console.log(`User updated to Stream after onboarding ${updatedUser.fullName}`);
+        } catch (error) {
+            console.log("Error upserting user to Stream", error);
+            res.status(500).json({ message: "Something went wrong" });
+        }
+
+        res.status(200).json({ message: "User onboarding completed successfully", updatedUser });
+
+    } catch (error) {
+        console.log("Error in onboarding", error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
