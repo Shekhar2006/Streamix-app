@@ -120,3 +120,13 @@ export const getFriendRequests = async (req, res) => {
         res.status(500).json({ message: "Something went wrong" });
     }
 };
+
+export const getOutgoingFriendRequests = async (req, res) => {
+    try {
+        const outgoingRequests = await FriendRequest.find({ sender: req.user._id, status: "pending" }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage").select("-password");
+        res.status(200).json(outgoingRequests);
+    } catch (error) {
+        console.log("Error getting outgoing friend requests", error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
