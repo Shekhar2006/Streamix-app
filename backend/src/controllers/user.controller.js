@@ -110,3 +110,13 @@ export const acceptFriendRequest = async (req, res) => {
     }
 };
 
+export const getFriendRequests = async (req, res) => {
+    try {
+        const friendRequests = await FriendRequest.find({ recipient: req.user._id, status: "pending" }).populate("sender", "fullName profilePic nativeLanguage learningLanguage").select("-password");
+        const acceptedRequests = await FriendRequest.find({ recipient: req.user._id, status: "accepted" }).populate("recipient", "fullName profilePic").select("-password");
+        res.status(200).json({ friendRequests, acceptedRequests });
+    } catch (error) {
+        console.log("Error getting friend requests", error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
