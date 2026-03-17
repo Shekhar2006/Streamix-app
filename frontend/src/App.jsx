@@ -7,9 +7,25 @@ import OnboardingPage from './pages/OnboardingPage.jsx'
 import NotificationsPage from './pages/NotificationsPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
-import toast ,{ Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
+import { useQuery } from '@tanstack/react-query'
+import { axiosInstance } from './lib/axios.js'
+
 
 const App = () => {
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("http://localhost:3000/api/auth/me");
+
+      return res.data;
+    }
+  });
+
+  console.log(data);
+
+
   return (
     <div className="h-screen" data-theme="coffee" >
       <Routes>
@@ -23,7 +39,7 @@ const App = () => {
         <Route path="/notifications" element={<NotificationsPage />} />
 
       </Routes>
-      <Toaster/>
+      <Toaster />
 
     </div>
   )
