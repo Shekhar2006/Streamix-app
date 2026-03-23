@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { use } from 'react'
 import { ShipWheelIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signup } from '../lib/api';
+import { useThemeStore } from '../store/useThemeStore';
 
 const SignupPage = () => {
 
@@ -14,6 +15,7 @@ const SignupPage = () => {
   });
 
   const queryClient = useQueryClient();
+  const {theme} =useThemeStore();
 
   const { mutate: signupMutate, isPending, error } = useMutation({
     mutationFn: signup,
@@ -28,7 +30,7 @@ const SignupPage = () => {
   }
 
   return (
-    <div className='h-screen flex items-center justify-center p-4 sm:p-6 md:p-8' data-theme="forest">
+    <div className='h-screen flex items-center justify-center p-4 sm:p-6 md:p-8' data-theme={theme}>
       <div className='border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden'>
 
         {/* left side */}

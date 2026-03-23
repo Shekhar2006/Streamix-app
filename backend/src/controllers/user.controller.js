@@ -40,7 +40,7 @@ export const getMyFriends = async (req, res) => {
 export const sendFriendRequest = async (req, res) => {
     try {
         const myId = req.user.id;
-        const { id: friendId } = req.params.id;
+        const friendId  = req.params.id;
 
         // check if user is sending a friend request to themselves
         if (myId === friendId) {
@@ -84,14 +84,14 @@ export const sendFriendRequest = async (req, res) => {
 export const acceptFriendRequest = async (req, res) => {
 
     try {
-        const {requestId} = req.params._id;
+        const requestId = req.params.id;
         const friendRequest = await FriendRequest.findById(requestId);   
 
         if (!friendRequest) {
             return res.status(400).json({ message: "Friend request not found" });
         }
 
-        if( friendRequest.recipient !== req.user._id ){
+        if(friendRequest.recipient.toString() !== req.user._id.toString()){
             return res.status(400).json({ message: "You are not the recipient of this friend request" });
         }
 
@@ -113,7 +113,7 @@ export const acceptFriendRequest = async (req, res) => {
 export const getFriendRequests = async (req, res) => {
     try {
         const friendRequests = await FriendRequest.find({ recipient: req.user._id, status: "pending" }).populate("sender", "fullName profilePic nativeLanguage learningLanguage").select("-password");
-        const acceptedRequests = await FriendRequest.find({ recipient: req.user._id, status: "accepted" }).populate("recipient", "fullName profilePic").select("-password");
+        const acceptedRequests = await FriendRequest.find({ recipient: req.user._id, status: "accepted" }).populate("sender", "fullName profilePic").select("-password");
         res.status(200).json({ friendRequests, acceptedRequests });
     } catch (error) {
         console.log("Error getting friend requests", error);

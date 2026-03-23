@@ -6,10 +6,13 @@ import toast from "react-hot-toast";
 import { completeOnboarding } from "../lib/api";
 import { LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
 import { LANGUAGES } from "../constants";
+import { useThemeStore } from '../store/useThemeStore';
+
 
 const OnboardingPage = () => {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
+  const {theme} = useThemeStore();
 
   const [formState, setFormState] = useState({
     fullName: authUser?.fullName || "",
